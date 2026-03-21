@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>RoleMatch AI — Intelligent Job Matching</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,900;1,600;1,700&family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+  <!-- background layers -->
+  <div class="bg-base"></div>
+  <div class="bg-orb orb1"></div>
+  <div class="bg-orb orb2"></div>
+  <div class="bg-orb orb3"></div>
+  <div class="bg-grid"></div>
+
+  <!-- ══ NAVBAR ══ -->
+  <nav class="navbar">
+    <div class="nav-inner">
+      <span class="brand-name">RoleMatch<em>AI</em></span>
+      <div class="nav-live">
+        <span class="nav-live-dot"></span>
+        Engine Active
+      </div>
+    </div>
+  </nav>
+
+  <!-- ══ HERO ══ -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-kicker">
+        <span class="kicker-icon">✦</span>
+        AI-Powered Career Intelligence
+        <span class="kicker-icon">✦</span>
+      </div>
+      <h1 class="hero-h1">
+        Your resume.<br/>
+        <span class="h1-gradient">Your perfect role.</span>
+      </h1>
+      <p class="hero-p">Upload your resume and our AI engine instantly surfaces the most relevant job titles from thousands of real profiles — ranked by similarity score.</p>
+      <div class="hero-badges">
+        <span class="hbadge"><span class="hbadge-dot teal"></span>55,068 Profiles</span>
+        <span class="hbadge"><span class="hbadge-dot amber"></span>Real-Time Analysis</span>
+        <span class="hbadge"><span class="hbadge-dot rose"></span>PDF · DOCX · TXT</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ MAIN WORKSPACE ══ -->
+  <main class="workspace">
+
+    <!-- INPUT CARD -->
+    <div class="wcard input-card">
+      <div class="wcard-stripe"></div>
+      <div class="wcard-inner">
+
+        <div class="sec-head">
+          <div class="sec-num">01</div>
+          <div>
+            <h2 class="sec-title">Upload Resume</h2>
+            <p class="sec-sub">PDF, DOCX or TXT · Multiple files supported</p>
+          </div>
+        </div>
+
+        <!-- DROP ZONE -->
+        <div class="dropzone" id="dropzone"
+             ondragover="onDragOver(event)"
+             ondragleave="onDragLeave(event)"
+             ondrop="onDrop(event)"
+             onclick="document.getElementById('file-input').click()">
+          <div class="dz-glow"></div>
+          <div class="dz-body">
+            <div class="dz-icon">
+              <svg width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.34-2.32 5.75 5.75 0 011.34 11.1"/>
+              </svg>
+            </div>
+            <div>
+              <p class="dz-title">Drop your resume here</p>
+              <p class="dz-hint">or <span class="dz-link">click to browse</span> files</p>
+            </div>
+          </div>
+          <input type="file" id="file-input" accept=".pdf,.docx,.txt" multiple
+                 style="display:none" onchange="onFileSelected(this)"/>
+        </div>
+
+        <div id="file-pills" class="file-pills"></div>
+
+        <div class="or-divider"><span>or paste resume text</span></div>
+
+        <div class="ta-wrap">
+          <textarea id="paste-area" class="ta"
+            placeholder="Paste your resume, skills or job description…&#10;&#10;e.g. Python, React, machine learning, TensorFlow, Node.js, MongoDB, REST APIs…"></textarea>
+          <span class="ta-count" id="ta-counter">0 words</span>
+        </div>
+
+        <button class="btn-go" id="submit-btn" onclick="submitResume()">
+          <span class="btn-shine"></span>
+          <span id="btn-label">Analyse &amp; Recommend</span>
+          <span class="btn-arrow">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
+            </svg>
+          </span>
+        </button>
+        <p class="kbd-tip"><kbd>Ctrl</kbd> + <kbd>Enter</kbd> to submit</p>
+
+      </div>
+    </div>
+
+    <!-- RESULTS CARD -->
+    <div class="wcard results-card" id="results-card">
+      <div class="wcard-stripe results-stripe"></div>
+      <div class="wcard-inner">
+
+        <div class="sec-head">
+          <div class="sec-num teal-num">02</div>
+          <div>
+            <h2 class="sec-title">Recommendations</h2>
+            <p class="sec-sub">Ranked by AI similarity score</p>
+          </div>
+        </div>
+
+        <!-- EMPTY -->
+        <div class="rstate" id="empty-state">
+          <div class="empty-rings">
+            <div class="er er1"></div>
+            <div class="er er2"></div>
+            <div class="er er3"></div>
+            <div class="er-core">
+              <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/>
+              </svg>
+            </div>
+          </div>
+          <h3 class="rstate-title">Ready to Analyse</h3>
+          <p class="rstate-body">Upload your resume on the left and we'll instantly match your skills against thousands of real job profiles.</p>
+          <div class="example-roles">
+            <span>Software Engineer</span>
+            <span>Data Scientist</span>
+            <span>ML Engineer</span>
+            <span>Full Stack Dev</span>
+          </div>
+        </div>
+
+        <!-- LOADING -->
+        <div class="rstate hidden" id="loading-state">
+          <div class="spinner-wrap">
+            <div class="sp sp1"></div>
+            <div class="sp sp2"></div>
+            <div class="sp-center">
+              <div class="sp-dot"></div>
+            </div>
+          </div>
+          <h3 class="rstate-title">Analysing…</h3>
+          <p class="rstate-body">Vectorizing · Matching · Ranking</p>
+          <div class="load-steps">
+            <div class="lstep active" id="step-1"><span class="lstep-d"></span>Extracting text</div>
+            <div class="lstep" id="step-2"><span class="lstep-d"></span>TF-IDF vectorization</div>
+            <div class="lstep" id="step-3"><span class="lstep-d"></span>Cosine similarity</div>
+            <div class="lstep" id="step-4"><span class="lstep-d"></span>Ranking results</div>
+          </div>
+        </div>
+
+        <!-- ERROR -->
+        <div class="rstate hidden" id="error-state">
+          <div class="err-box">
+            <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"/>
+            </svg>
+          </div>
+          <h3 class="rstate-title" style="color:#ef4444">Failed</h3>
+          <p class="rstate-body" id="error-text"></p>
+        </div>
+
+        <!-- RESULTS -->
+        <div class="rbody hidden" id="results-inner">
+
+          <!-- BEST MATCH -->
+          <div class="best-card" id="best-card">
+            <div class="bc-top">
+              <div class="bc-chip">⚡ Best Match</div>
+              <div class="bc-pct" id="bc-pct">—</div>
+            </div>
+            <div class="bc-title" id="bc-title">—</div>
+            <div class="bc-file" id="bc-file"></div>
+            <div class="bc-bar-track">
+              <div class="bc-bar-fill" id="bc-bar"></div>
+            </div>
+            <p class="bc-preview" id="bc-preview"></p>
+          </div>
+
+          <!-- LIST HEADER -->
+          <div class="rl-header">
+            <span class="rl-label">All Recommendations</span>
+            <span class="rl-count" id="rl-count"></span>
+          </div>
+
+          <!-- LIST -->
+          <div class="rl" id="results-list"></div>
+
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <span><strong>RoleMatch AI</strong></span>
+    <span class="fsep">·</span>
+    <span>Flask · TF-IDF · Cosine Similarity</span>
+    <span class="fsep">·</span>
+    <span>kandij/job-recommendation-datasets · PythonAnywhere</span>
+  </footer>
+
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
